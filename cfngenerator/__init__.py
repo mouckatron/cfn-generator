@@ -1,3 +1,5 @@
+import yaml
+
 name = 'cfngenerator'
 
 
@@ -10,34 +12,45 @@ class CFTemplate(object):
     def add(self, resource):
         self.resources.append(resource)
 
-    def __str__(self):
-        output = """AWSTemplateFormatVersion: 2010-09-09
-Description: {description}
-""".format(description=self.description)
-
+    def get_resources_for_output(self):
+        type_count = {}
+        output_resources = {}
         for x in self.resources:
-            resources_output = "\n".join([x.__str__() for x in self.resources])
+            type_name = x.__class__.type_name
+            try:
+                type_count[type_name]
+            except KeyError:
+                type_count[type_name] = 1
+            else:
+                type_count[type_name] += 1
 
-        return output + resources_output
+            resource_name = type_name + str(type_count[type_name])
+            output_resources[resource_name] = dict(x)
+
+        return output_resources or None
+
+    def output(self):
+        output_dict = {
+            'AWSTemplateFormatVersion': '2010-09-09',
+            'Description': self.description,
+            'Resources': self.get_resources_for_output()
+        }
+
+        return yaml.dump(output_dict,
+                         default_flow_style=False)
 
 
-class EC2Instance(object):
+class EC2Instance(dict):
+
+    type_name = 'EC2Instance'
 
     def __init__(self, AvailabilityZone='', ImageId='', InstanceType=''):
+        self['Type'] = 'AWS::EC2::Instance'
+        self['Properties'] = dict()
         self.AvailabilityZone = AvailabilityZone
         self.ImageId = ImageId
         self.InstanceType = InstanceType
+        dict.__init__(self)
 
-    def __str__(self):
-        return """Type: AWS::EC2::Instance
-Properties:
-  AvailabilityZone: {AvailabilityZone}
-  ImageId: {ImageId}
-  InstanceType: {InstanceType}""".format(**self.__dict__())
-
-    def __dict__(self):
-        return {
-            'AvailabilityZone': self.AvailabilityZone,
-            'ImageId': self.ImageId,
-            'InstanceType': self.InstanceType
-            }
+    def __setattr__(self, key, value):
+        self['Properties'][key] = value

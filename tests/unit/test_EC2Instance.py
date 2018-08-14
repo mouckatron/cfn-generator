@@ -1,5 +1,7 @@
 
 import unittest
+from collections import OrderedDict
+import yaml
 
 import cfngenerator
 
@@ -55,26 +57,28 @@ class TestEC2Instance(unittest.TestCase):
         assert subject is not None
 
     def testBaseOutput(self):
-        output = """Type: AWS::EC2::Instance
-Properties:
-  AvailabilityZone: az1
-  ImageId: ami-12345678
-  InstanceType: a1.size"""
+        output = yaml.dump({'Type': 'AWS::EC2::Instance',
+                            'Properties': {
+                                'AvailabilityZone': 'az-1',
+                                'ImageId': 'ami-12345678',
+                                'InstanceType': 'a1.size'}
+                            }, default_flow_style=False)
 
-        subject = cfngenerator.EC2Instance(AvailabilityZone='az1',
+        subject = cfngenerator.EC2Instance(AvailabilityZone='az-1',
                                            ImageId='ami-12345678',
                                            InstanceType='a1.size')
-        self.assertEqual(subject.__str__(), output)
+
+        self.assertEqual(yaml.dump(dict(subject), default_flow_style=False), output)
 
     def testCreateWithDifferentProperties(self):
-        output = """Type: AWS::EC2::Instance
-Properties:
-  AvailabilityZone: az-2
-  ImageId: ami-23456789
-  InstanceType: b1.size"""
+        output = yaml.dump({'Type': 'AWS::EC2::Instance', 'Properties': {
+            'AvailabilityZone': 'az-2',
+            'ImageId': 'ami-23456789',
+            'InstanceType': 'b1.size'}
+            }, default_flow_style=False)
 
         subject = cfngenerator.EC2Instance(AvailabilityZone='az-2',
                                            ImageId='ami-23456789',
                                            InstanceType='b1.size')
 
-        self.assertEqual(subject.__str__(), output)
+        self.assertEqual(yaml.dump(dict(subject), default_flow_style=False), output)
