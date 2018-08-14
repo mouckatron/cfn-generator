@@ -12,15 +12,31 @@ class TestCFTemplate(unittest.TestCase):
         assert subject is not None
 
     def testBaseOutput(self):
-        output = 'AWSTemplateFormatVersion: "2010-09-09"\
-Description: "The Description"'
+        output = """AWSTemplateFormatVersion: 2010-09-09
+Description: The Description"""
 
         subject = cfngenerator.CFTemplate("The Description")
-        assert subject.__str__() == output
+        self.assertEqual(subject.__str__(), output)
 
     def testDescription(self):
-        output = 'AWSTemplateFormatVersion: "2010-09-09"\
-Description: "A Different Description"'
+        output = """AWSTemplateFormatVersion: 2010-09-09
+Description: A Different Description"""
 
         subject = cfngenerator.CFTemplate("A Different Description")
-        assert subject.__str__() == output
+        self.assertEqual(subject.__str__(), output)
+
+    def testOutputWithChildren(self):
+        output = """AWSTemplateFormatVersion: 2010-09-09
+Description: The Description
+Resources:
+  EC2Instance1:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: az1
+      ImageId: ami-12345678
+      InstanceType: a1.size"""
+
+        subject = cfngenerator.CFTemplate("The Description")
+        subject.add(cfngenerator.EC2Instance("az-1", "ami-12345678", "a1.size"))
+
+        self.assertEqual(subject.__str__(), output)

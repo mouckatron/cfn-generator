@@ -55,26 +55,26 @@ class TestEC2Instance(unittest.TestCase):
         assert subject is not None
 
     def testBaseOutput(self):
-        output = 'Type: AWS::EC2::Instance\
-Properties:\
-  AvailabilityZone: az-1\
-  ImageId: ami-12345678\
-  InstanceType: a1.size'
+        output = """Type: AWS::EC2::Instance
+Properties:
+  AvailabilityZone: az1
+  ImageId: ami-12345678
+  InstanceType: a1.size"""
 
         subject = cfngenerator.EC2Instance(AvailabilityZone='az1',
                                            ImageId='ami-12345678',
                                            InstanceType='a1.size')
-        assert subject.__str__() == output
+        self.assertEqual(subject.__str__(), output)
 
-    def testDifferentProperties(self):
-        output = 'Type: AWS::EC2::Instance\
-Properties:\
-  AvailabilityZone: az-2\
-  ImageId: ami-23456789\
-  InstanceType: b1.size'
+    def testCreateWithDifferentProperties(self):
+        output = """Type: AWS::EC2::Instance
+Properties:
+  AvailabilityZone: az-2
+  ImageId: ami-23456789
+  InstanceType: b1.size"""
 
-        subject = cfngenerator.EC2Instance(AvailabilityZone='az1',
-                                           ImageId='ami-12345678',
-                                           InstanceType='a1.size')
+        subject = cfngenerator.EC2Instance(AvailabilityZone='az-2',
+                                           ImageId='ami-23456789',
+                                           InstanceType='b1.size')
 
-        assert subject.__str__() == output
+        self.assertEqual(subject.__str__(), output)
