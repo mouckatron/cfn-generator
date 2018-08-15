@@ -40,17 +40,25 @@ class CFTemplate(object):
                          default_flow_style=False)
 
 
-class EC2Instance(dict):
+class GenericResource(dict):
+
+    type_name = 'GenericResource'
+
+    def __init__(self, Type):
+        self['Type'] = Type
+        self['Properties'] = dict()
+
+    def __setattr__(self, key, value):
+        self['Properties'][key] = value
+
+
+class EC2Instance(GenericResource):
 
     type_name = 'EC2Instance'
 
     def __init__(self, AvailabilityZone='', ImageId='', InstanceType=''):
-        self['Type'] = 'AWS::EC2::Instance'
-        self['Properties'] = dict()
+        GenericResource.__init__(self, 'AWS::EC2::Instance')
         self.AvailabilityZone = AvailabilityZone
         self.ImageId = ImageId
         self.InstanceType = InstanceType
         dict.__init__(self)
-
-    def __setattr__(self, key, value):
-        self['Properties'][key] = value
