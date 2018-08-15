@@ -51,8 +51,8 @@ class TestCFTemplate(unittest.TestCase):
             }
 
         subject = cfngenerator.CFTemplate("The Description")
-        subject.add(cfngenerator.EC2Instance("az-1", "ami-12345678", "a1.size"))
-        subject.add(cfngenerator.EC2Instance("az-2", "ami-23456789", "b1.size"))
+        subject.add(cfngenerator.EC2Instance(AvailabilityZone="az-1", ImageId="ami-12345678", InstanceType="a1.size"))
+        subject.add(cfngenerator.EC2Instance(AvailabilityZone="az-2", ImageId="ami-23456789", InstanceType="b1.size"))
 
         self.assertEqual(subject.get_resources_for_output(), output)
 
@@ -81,7 +81,7 @@ class TestCFTemplate(unittest.TestCase):
                            default_flow_style=False)
 
         subject = cfngenerator.CFTemplate("The Description")
-        subject.add(cfngenerator.EC2Instance("az-1", "ami-12345678", "a1.size"))
-        subject.add(cfngenerator.EC2Instance("az-2", "ami-23456789", "b1.size"))
+        subject.add(cfngenerator.EC2Instance(AvailabilityZone="az-1", ImageId="ami-12345678", InstanceType="a1.size"))
+        subject.add(cfngenerator.EC2Instance(AvailabilityZone="az-2", ImageId="ami-23456789", InstanceType="b1.size"))
 
         self.assertEqual(subject.output(), output)

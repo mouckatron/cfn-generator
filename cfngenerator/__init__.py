@@ -44,9 +44,12 @@ class GenericResource(dict):
 
     type_name = 'GenericResource'
 
-    def __init__(self, Type):
+    def __init__(self, Type, **kwargs):
         self['Type'] = Type
         self['Properties'] = dict()
+        for kw in kwargs:
+            self.__setattr__(kw, kwargs[kw])
+        dict.__init__(self)
 
     def __setattr__(self, key, value):
         self['Properties'][key] = value
@@ -56,9 +59,5 @@ class EC2Instance(GenericResource):
 
     type_name = 'EC2Instance'
 
-    def __init__(self, AvailabilityZone='', ImageId='', InstanceType=''):
-        GenericResource.__init__(self, 'AWS::EC2::Instance')
-        self.AvailabilityZone = AvailabilityZone
-        self.ImageId = ImageId
-        self.InstanceType = InstanceType
-        dict.__init__(self)
+    def __init__(self, **kwargs):
+        GenericResource.__init__(self, 'AWS::EC2::Instance', **kwargs)
