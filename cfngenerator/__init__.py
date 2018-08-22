@@ -1,6 +1,21 @@
+import gzip
+import json
 import yaml
 
 name = 'cfngenerator'
+
+
+def load(filename='CloudFormationResourceSpecification.json'):
+    with gzip.open(filename, 'rb') as f:
+        ResourceSpec = json.loads(f.read().decode('utf-8'))
+
+    for spec in ResourceSpec['ResourceTypes']:
+        class_factory(spec)
+
+
+def class_factory(name, spec):
+    newclass = type(name, (GenericResource,), {})
+    globals()[name] = newclass
 
 
 class CFTemplate(object):
@@ -41,9 +56,6 @@ class CFTemplate(object):
 
 
 class GenericResource(dict):
-
-    type_name = 'GenericResource'
-
     def __init__(self, Type, **kwargs):
         self['Type'] = Type
         self['Properties'] = dict()
@@ -53,11 +65,3 @@ class GenericResource(dict):
 
     def __setattr__(self, key, value):
         self['Properties'][key] = value
-
-
-class EC2Instance(GenericResource):
-
-    type_name = 'EC2Instance'
-
-    def __init__(self, **kwargs):
-        GenericResource.__init__(self, 'AWS::EC2::Instance', **kwargs)
