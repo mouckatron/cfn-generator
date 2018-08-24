@@ -1,6 +1,7 @@
 
 import unittest
 import unittest.mock
+import json
 import yaml
 
 import cfngenerator
@@ -14,8 +15,8 @@ class TestClassFactory(unittest.TestCase):
 
     def testCreateClass(self):
 
-        name = 'GeneratedClass'
-        spec = ''  # does not need to be anything. See later tests.
+        name = 'AWS::SomeService::GeneratedClass'
+        spec = json.loads('{}')  # does not need to be anything. See later tests.
 
         cfngenerator.class_factory(name, spec)
 
@@ -23,24 +24,24 @@ class TestClassFactory(unittest.TestCase):
 
     def testCreateClassWithSpec(self):
 
-        name = 'GeneratedClass'
-        spec = '''{AWS::SomeService::GeneratedClass: {
-                       Documentation: "http://somewebpage",
-                       Properties: {
-                           Parameter1: {
-                               Documentation: "http://somewebpage/parameter1",
-                               PrimitiveType: "String",
-                               Required: true,
-                               UpdateType: "Immutable"
+        name = 'AWS::SomeService::GeneratedClass'
+        spec = json.loads('''{
+                       "Documentation": "http://somewebpage",
+                       "Properties": {
+                           "Parameter1": {
+                               "Documentation": "http://somewebpage/parameter1",
+                               "PrimitiveType": "String",
+                               "Required": true,
+                               "UpdateType": "Immutable"
                            },
-                           Parameter1: {
-                               Documentation: "http://somewebpage/parameter2",
-                               PrimitiveType: "String",
-                               Required: false,
-                               UpdateType: "Mutable"
+                           "Parameter2": {
+                               "Documentation": "http://somewebpage/parameter2",
+                               "PrimitiveType": "String",
+                               "Required": false,
+                               "UpdateType": "Mutable"
                            }
                       }
-                  }'''
+                  }''')
 
         cfngenerator.class_factory(name, spec)
 
@@ -49,24 +50,25 @@ class TestClassFactory(unittest.TestCase):
 
     def testGeneratedClassOutput(self):
 
-        name = 'GeneratedClass'
-        spec = '''{AWS::SomeService::GeneratedClass: {
-                       Documentation: "http://somewebpage",
-                       Properties: {
-                           Parameter1: {
-                               Documentation: "http://somewebpage/parameter1",
-                               PrimitiveType: "String",
-                               Required: true,
-                               UpdateType: "Immutable"
+        name = 'AWS::SomeService::GeneratedClass'
+        spec = json.loads('''{
+                       "Documentation": "http://somewebpage",
+                       "Properties": {
+                           "Parameter1": {
+                               "Documentation": "http://somewebpage/parameter1",
+                               "PrimitiveType": "String",
+                               "Required": true,
+                               "UpdateType": "Immutable"
                            },
-                           Parameter1: {
-                               Documentation: "http://somewebpage/parameter2",
-                               PrimitiveType: "String",
-                               Required: false,
-                               UpdateType: "Mutable"
+                           "Parameter2": {
+                               "Documentation": "http://somewebpage/parameter2",
+                               "PrimitiveType": "String",
+                               "Required": false,
+                               "UpdateType": "Mutable"
                            }
                       }
-                  }'''
+                  }''')
+
         output = yaml.dump({'Type': 'AWS::SomeService::GeneratedClass', 'Properties': {
             'Parameter1': 'a value',
             'Parameter2': 'another value'}
@@ -76,8 +78,5 @@ class TestClassFactory(unittest.TestCase):
 
         subject = cfngenerator.GeneratedClass(Parameter1='a value',
                                               Parameter2='another value')
-
-        print(output)
-        print(yaml.dump(dict(subject), default_flow_style=False))
 
         self.assertEqual(yaml.dump(dict(subject), default_flow_style=False), output)

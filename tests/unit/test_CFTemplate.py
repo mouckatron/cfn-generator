@@ -7,6 +7,9 @@ import cfngenerator
 
 class TestCFTemplate(unittest.TestCase):
 
+    def setUp(self):
+        cfngenerator.load(filename='tests/resources/TestSpec.json.gz')
+
     def testCreate(self):
         subject = None
         subject = cfngenerator.CFTemplate()
@@ -32,27 +35,25 @@ class TestCFTemplate(unittest.TestCase):
 
     def testGetResourcesForOutput(self):
         output = {
-            'EC2Instance1': {
-                'Type': 'AWS::EC2::Instance',
+            'GeneratedClass0': {
+                'Type': 'AWS::SomeService::GeneratedClass',
                 'Properties': {
-                    'AvailabilityZone': 'az-1',
-                    'ImageId': 'ami-12345678',
-                    'InstanceType': 'a1.size'
+                    'Parameter1': 'az-1',
+                    'Parameter2': 'ami-12345678'
                     }
                 },
-            'EC2Instance2': {
-                'Type': 'AWS::EC2::Instance',
+            'GeneratedClass1': {
+                'Type': 'AWS::SomeService::GeneratedClass',
                 'Properties': {
-                    'AvailabilityZone': 'az-2',
-                    'ImageId': 'ami-23456789',
-                    'InstanceType': 'b1.size'
+                    'Parameter1': 'az-2',
+                    'Parameter2': 'ami-23456789'
                     }
                 }
             }
 
         subject = cfngenerator.CFTemplate("The Description")
-        subject.add(cfngenerator.EC2Instance(AvailabilityZone="az-1", ImageId="ami-12345678", InstanceType="a1.size"))
-        subject.add(cfngenerator.EC2Instance(AvailabilityZone="az-2", ImageId="ami-23456789", InstanceType="b1.size"))
+        subject.add(cfngenerator.GeneratedClass(Parameter1="az-1", Parameter2="ami-12345678"))
+        subject.add(cfngenerator.GeneratedClass(Parameter2="ami-23456789", Parameter1="az-2"))
 
         self.assertEqual(subject.get_resources_for_output(), output)
 
@@ -60,28 +61,25 @@ class TestCFTemplate(unittest.TestCase):
         output = yaml.dump({'AWSTemplateFormatVersion': '2010-09-09',
                             'Description': 'The Description',
                             'Resources': {
-                                'EC2Instance1': {
-                                    'Type': 'AWS::EC2::Instance',
+                                'GeneratedClass0': {
+                                    'Type': 'AWS::SomeService::GeneratedClass',
                                     'Properties': {
-                                        'AvailabilityZone': 'az-1',
-                                        'ImageId': 'ami-12345678',
-                                        'InstanceType': 'a1.size'
+                                        'Parameter1': 'az-1',
+                                        'Parameter2': 'ami-12345678'
                                         }
                                     },
-                                'EC2Instance2': {
-                                    'Type': 'AWS::EC2::Instance',
+                                'GeneratedClass1': {
+                                    'Type': 'AWS::SomeService::GeneratedClass',
                                     'Properties': {
-                                        'AvailabilityZone': 'az-2',
-                                        'ImageId': 'ami-23456789',
-                                        'InstanceType': 'b1.size'
-                                        }
+                                        'Parameter1': 'az-2',
+                                        'Parameter2': 'ami-23456789'
                                     }
                                 }
-                            },
+                            }},
                            default_flow_style=False)
 
         subject = cfngenerator.CFTemplate("The Description")
-        subject.add(cfngenerator.EC2Instance(AvailabilityZone="az-1", ImageId="ami-12345678", InstanceType="a1.size"))
-        subject.add(cfngenerator.EC2Instance(AvailabilityZone="az-2", ImageId="ami-23456789", InstanceType="b1.size"))
+        subject.add(cfngenerator.GeneratedClass(Parameter1="az-1", Parameter2="ami-12345678"))
+        subject.add(cfngenerator.GeneratedClass(Parameter1="az-2", Parameter2="ami-23456789"))
 
         self.assertEqual(subject.output(), output)

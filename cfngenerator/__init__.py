@@ -9,13 +9,18 @@ def load(filename='CloudFormationResourceSpecification.json'):
     with gzip.open(filename, 'rb') as f:
         ResourceSpec = json.loads(f.read().decode('utf-8'))
 
-    for spec in ResourceSpec['ResourceTypes']:
-        class_factory(spec)
+    for name in ResourceSpec['ResourceTypes']:
+        class_factory(name, ResourceSpec['ResourceTypes'][name])
 
 
 def class_factory(name, spec):
-    newclass = type(name, (GenericResource,), {})
-    globals()[name] = newclass
+    class_type = name
+    class_name = name.split('::')[2]
+
+    newclass = type(class_name, (GenericResource,), {
+        'Type': class_type})
+
+    globals()[class_name] = newclass
 
 
 class CFTemplate(object):
@@ -31,11 +36,11 @@ class CFTemplate(object):
         type_count = {}
         output_resources = {}
         for x in self.resources:
-            type_name = x.__class__.type_name
+            type_name = x.__class__.__name__
             try:
                 type_count[type_name]
             except KeyError:
-                type_count[type_name] = 1
+                type_count[type_name] = 0
             else:
                 type_count[type_name] += 1
 
@@ -56,8 +61,8 @@ class CFTemplate(object):
 
 
 class GenericResource(dict):
-    def __init__(self, Type, **kwargs):
-        self['Type'] = Type
+    def __init__(self, **kwargs):
+        self['Type'] = self.Type
         self['Properties'] = dict()
         for kw in kwargs:
             self.__setattr__(kw, kwargs[kw])
