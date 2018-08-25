@@ -52,8 +52,8 @@ class TestCFTemplate(unittest.TestCase):
             }
 
         subject = cfngenerator.CFTemplate("The Description")
-        subject.add(cfngenerator.GeneratedClass(Parameter1="az-1", Parameter2="ami-12345678"))
-        subject.add(cfngenerator.GeneratedClass(Parameter2="ami-23456789", Parameter1="az-2"))
+        subject.add(cfngenerator.SomeService_GeneratedClass(Parameter1="az-1", Parameter2="ami-12345678"))
+        subject.add(cfngenerator.SomeService_GeneratedClass(Parameter2="ami-23456789", Parameter1="az-2"))
 
         self.assertEqual(subject.get_resources_for_output(), output)
 
@@ -79,7 +79,7 @@ class TestCFTemplate(unittest.TestCase):
                            default_flow_style=False)
 
         subject = cfngenerator.CFTemplate("The Description")
-        subject.add(cfngenerator.GeneratedClass(Parameter1="az-1", Parameter2="ami-12345678"))
-        subject.add(cfngenerator.GeneratedClass(Parameter1="az-2", Parameter2="ami-23456789"))
+        subject.add(cfngenerator.SomeService_GeneratedClass(Parameter1="az-1", Parameter2="ami-12345678"))
+        subject.add(cfngenerator.SomeService_GeneratedClass(Parameter1="az-2", Parameter2="ami-23456789"))
 
         self.assertEqual(subject.output(), output)

@@ -15,7 +15,7 @@ def load(filename='CloudFormationResourceSpecification.json'):
 
 def class_factory(name, spec):
     class_type = name
-    class_name = name.split('::')[2]
+    class_name = name.split('::')[1] + '_' + name.split('::')[2]
 
     newclass = type(class_name, (GenericResource,), {
         'Type': class_type})
@@ -36,7 +36,7 @@ class CFTemplate(object):
         type_count = {}
         output_resources = {}
         for x in self.resources:
-            type_name = x.__class__.__name__
+            type_name = x.__class__.__name__.split('_')[1]
             try:
                 type_count[type_name]
             except KeyError:

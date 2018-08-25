@@ -20,7 +20,7 @@ class TestClassFactory(unittest.TestCase):
 
         cfngenerator.class_factory(name, spec)
 
-        self.assertIsInstance(cfngenerator.GeneratedClass, object)
+        self.assertIsInstance(cfngenerator.SomeService_GeneratedClass, object)
 
     def testCreateClassWithSpec(self):
 
@@ -45,8 +45,8 @@ class TestClassFactory(unittest.TestCase):
 
         cfngenerator.class_factory(name, spec)
 
-        cfngenerator.GeneratedClass(Parameter1='a value',
-                                    Parameter2='another value')
+        cfngenerator.SomeService_GeneratedClass(Parameter1='a value',
+                                                Parameter2='another value')
 
     def testGeneratedClassOutput(self):
 
@@ -76,7 +76,7 @@ class TestClassFactory(unittest.TestCase):
 
         cfngenerator.class_factory(name, spec)
 
-        subject = cfngenerator.GeneratedClass(Parameter1='a value',
-                                              Parameter2='another value')
+        subject = cfngenerator.SomeService_GeneratedClass(Parameter1='a value',
+                                                          Parameter2='another value')
 
         self.assertEqual(yaml.dump(dict(subject), default_flow_style=False), output)
