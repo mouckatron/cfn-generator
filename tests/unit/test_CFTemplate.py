@@ -13,7 +13,7 @@ class TestCFTemplate(unittest.TestCase):
     def testCreate(self):
         subject = None
         subject = cfngenerator.CFTemplate()
-        assert subject is not None
+        self.assertIsNotNone(subject)
 
     def testBaseOutput(self):
         output = yaml.dump({'AWSTemplateFormatVersion': '2010-09-09',
