@@ -13,7 +13,7 @@ class TestCFTemplate(unittest.TestCase):
     def testCreate(self):
         subject = None
         subject = cfngenerator.CFTemplate()
-        assert subject is not None
+        self.assertIsNotNone(subject)
 
     def testBaseOutput(self):
         output = yaml.dump({'AWSTemplateFormatVersion': '2010-09-09',
@@ -81,5 +81,36 @@ class TestCFTemplate(unittest.TestCase):
         subject = cfngenerator.CFTemplate("The Description")
         subject.add(cfngenerator.SomeService_GeneratedClass(Parameter1="az-1", Parameter2="ami-12345678"))
         subject.add(cfngenerator.SomeService_GeneratedClass(Parameter1="az-2", Parameter2="ami-23456789"))
+
+        self.assertEqual(subject.output(), output)
+
+    def testOutputWithReferences(self):
+        return
+        output = yaml.dump({'AWSTemplateFormatVersion': '2010-09-09',
+                            'Description': 'The Description',
+                            'Resources': {
+                                'GeneratedClass0': {
+                                    'Type': 'AWS::SomeService::GeneratedClass',
+                                    'Properties': {
+                                        'Parameter1': 'az-1',
+                                        'Parameter2': 'ami-12345678'
+                                        }
+                                    },
+                                'GeneratedClass1': {
+                                    'Type': 'AWS::SomeService::GeneratedClass',
+                                    'Properties': {
+                                        'Parameter1': 'az-2',
+                                        'Parameter2': '!Ref GeneratedClass0'
+                                    }
+                                }
+                            }},
+                           default_flow_style=False)
+
+        subject = cfngenerator.CFTemplate("The Description")
+        subject_child1 = cfngenerator.SomeService_GeneratedClass(Parameter1="az-1",
+                                                                 Parameter2="ami-12345678")
+        subject.add(subject_child1)
+        subject.add(cfngenerator.SomeService_GeneratedClass(Parameter1="az-2",
+                                                            Parameter2=subject_child1))
 
         self.assertEqual(subject.output(), output)
